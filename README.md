@@ -88,7 +88,7 @@ osboxes          Ready    <none>   12m    v1.16.4   172.16.209.130   <none>     
 _Note_: INTERNAL-IP of master match with ip used in join command.
 
 # MicroK8s NFS ping pong
-In this part we will setup nfs server and two workers on cluster. Config files are present in this repository **TODO**. They are based on following tutorial. You can read it to learn something more.
+In this part we will setup nfs server and two workers on cluster. Config files are present in this repository. They are based on following tutorial. You can read it to learn something more.
 https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs
 
 If you prefer to check status of cluster (nodes, pods, pv, pvc, services, etc.) in browser then in CLI, you can go first to **MicroK8s dashboard** section now and return here later.
