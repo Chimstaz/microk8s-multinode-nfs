@@ -1,5 +1,5 @@
 # microk8s-multinode-nfs
-Pourpose of this repo is to show basic setup and usage of MicroK8s.
+Purpose of this repo is to show basic setup and usage of MicroK8s.
 
 # VM setup
 
@@ -9,8 +9,10 @@ https://www.osboxes.org/ubuntu/#ubuntu-1804-vmware
 
 You will need to make two copies of disk image and create two virtual machines.
 
+The default password for machines on above website is **osboxes.org**.
+
 ## Required VM configuration
-For convinience you can disable automatic updates on VM.
+For convenience you can disable automatic updates on VM.
 https://linuxconfig.org/disable-automatic-updates-on-ubuntu-18-04-bionic-beaver-linux
 
 **Important:** MicroK8s require different hostnames for each node. You **have to** change name of one VM.
@@ -31,7 +33,7 @@ sudo apt-get install net-tools
 
 # MicroK8s setup
 
-## Instalation
+## Installation
 This section is based on MicroK8s Quick start page: https://microk8s.io/docs/
 ```
 sudo snap install microk8s --classic --channel=1.16/stable
@@ -47,7 +49,7 @@ _Note:_ change in iptables is required to forward ports between pods.
 ## Master configuration
 On master node you will use microk8s.kubectl to menage cluster. You will need to change default configuration.
 
-**Important:** nfs server pod which will be run in next part of tutorial require privileged access. You need to explicite enable this by writing `--allow-privileged=true` to the following file:
+**Important:** nfs server pod which will be run in next part of tutorial require privileged access. You need to explicit enable this by writing `--allow-privileged=true` to the following file:
 ```
 sudo vim /var/snap/microk8s/current/args/kube-apiserver
 ```
@@ -57,7 +59,7 @@ Now you can start MicroK8s:
 ```
 microk8s.start
 ```
-Next part cover conecting nodes into cluster. It is based on https://microk8s.io/docs/clustering.
+Next part cover connecting nodes into cluster. It is based on https://microk8s.io/docs/clustering.
 On master run:
 ```
 microk8s.add-node
@@ -72,11 +74,11 @@ If the node you are adding is not reachable through the default interface you ca
  microk8s.join 10.1.7.0:25000/wBKwiPCoZGDqwfnjvfdemJXxYgyeJYGv
 ```
 ## Node configuration
-On second node which is not master you need to run join command proposed by add-node. You will need to choose ip address which is accessable from node (check with ping).
+On second node which is not master you need to run join command proposed by add-node. You will need to choose ip address which is accessible from node (check with ping).
 ```
 microk8s.join 172.16.209.130:25000/wBKwiPCoZGDqwfnjvfdemJXxYgyeJYGv
 ```
-_Note_: token in join command can be used only once. You will need to generete new token on master to add different node.
+_Note_: token in join command can be used only once. You will need to generate new token on master to add different node.
 
 To check if node is added correctly you can run on master:
 ```
@@ -94,7 +96,7 @@ https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs
 If you prefer to check status of cluster (nodes, pods, pv, pvc, services, etc.) in browser then in CLI, you can go first to **MicroK8s dashboard** section now and return here later.
 
 ## Setup NFS server
-First you need to create service. It will describe which network ports are open. It will also create service ip address which will be used to comunicate with pod which implement this service.
+First you need to create service. It will describe which network ports are open. It will also create service ip address which will be used to communicate with pod which implement this service.
 ```
 microk8s.kubectl apply -f nfs-server-service.yaml
 ```
@@ -118,13 +120,13 @@ After that you can create persistent volume and persistent volume claim. The fir
 microk8s.kubectl apply -f nfs-pv.yaml
 microk8s.kubectl apply -f nfs-pvc.yaml
 ```
-_Note_: pv and pvc applied on kubernetes can be shown using kubectl get with pv or pvc argument. It is similar to geting services (svc) and nodes (no).
+_Note_: pv and pvc applied on kubernetes can be shown using kubectl get with pv or pvc argument. It is similar to getting services (svc) and nodes (no).
 
-Now you can run nfs server. We will use replication controler. This controler makes sure that there is specified number of pods with described configuration. We will create one nfs server.
+Now you can run nfs server. We will use replication controller. This controller makes sure that there is specified number of pods with described configuration. We will create one nfs server.
 ```
 microk8s.kubectl apply -f nfs-server-rc.yaml
 ```
-You can see that replication controler is created.
+You can see that replication controller is created.
 ```
 $ microk8s.kubectl get rc
 NAME          DESIRED   CURRENT   READY   AGE
@@ -195,7 +197,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 ```
 You can see that 10.1.7.0 subnet is directly connected to master, while 10.1.88.0 is routed by flannel. Both cni0 and flannel.1 are logic interfaces.
 
-The script that is running on workers is written in nfs-busybox-rc.yaml. They should change content of the index.html file on nfs server. You can check it mounting nfs and displaing index.html file.
+The script that is running on workers is written in nfs-busybox-rc.yaml. They should change content of the index.html file on nfs server. You can check it mounting nfs and displaying index.html file.
 ```
 $ cat ~/tmpmnt/index.html 
 Sun Jan 19 15:35:27 UTC 2020
@@ -221,7 +223,7 @@ nfs-busybox-8qn7z
 Sun Jan 19 15:35:59 UTC 2020
 nfs-busybox-hbdkd
 ```
-You can also access pod shell directly from master usin pod's name:
+You can also access pod shell directly from master using pod's name:
 ```
 $ microk8s.kubectl exec -it nfs-busybox-8qn7z -- sh
 / # mount | grep nfs
@@ -272,11 +274,11 @@ You can skip --address option in next command, but without making dashboard publ
 ```
 microk8s.kubectl port-forward -n kube-system service/kubernetes-dashboard 10443:443 --address 0.0.0.0
 ```
-Dashboard is available on localhost (when you are using browser in your master VM) or on address specified in option (if address is 0.0.0.0 then dashobard is available through all network interfaces). Use following address in your browser (change ip if required).
+Dashboard is available on localhost (when you are using browser in your master VM) or on address specified in option (if address is 0.0.0.0 then dashboard is available through all network interfaces). Use following address in your browser (change ip if required).
 ```
 https://172.16.209.130:10443
 ```
-_Note_: https protocol is used for comunication. You may need to add certificate exception in your browser.
+_Note_: https protocol is used for communication. You may need to add certificate exception in your browser.
 
 # Useful commands
 After changing configuration files you should use following sequence to reset MicroK8s:
@@ -292,7 +294,7 @@ If you need to restore default MicroK8s configuration, you can remove it. Later 
 ```
 sudo snap remove microk8s
 ```
-In CLI all objects (pods, pvc, pv, nodes, services, etc.) can be chacked using get command. With option `-o wide` this command gives more details.
+In CLI all objects (pods, pvc, pv, nodes, services, etc.) can be checked using get command. With option `-o wide` this command gives more details.
 ```
 microk8s.kubectl get pod -o wide
 ```
@@ -308,7 +310,7 @@ Apply may update configuration of kubernetes objects as well as creating theme. 
 ```
 microk8s.kubectl apply -f nfs-server-rc.yaml
 ```
-PV cannot be updated. First you have to delete coressponding PVC and later delete PV and recreate it.
+PV cannot be updated. First you have to delete corresponding PVC and later delete PV and recreate it.
 ```
 microk8s.kubectl delete pvc nfs
 microk8s.kubectl delete pv nfs
@@ -318,7 +320,7 @@ You can run commands on pods. Including interactive shell.
 ```
 microk8s.kubectl exec -it nfs-server-8qn7z -- sh
 ```
-Deleting replication controler will stop all coresponding pods.
+Deleting replication controller will stop all corresponding pods.
 ```
 microk8s.kubectl delete rc nfs-busybox
 ```
